@@ -11,10 +11,16 @@ import java.util.List;
  *
  * @author jakob
  */
-public class DefaultMessageMapper implements MessageMapper<String, Character, String, List<Object>, String, Object> {
+public class DefaultMessageMapper implements MessageMapper<String, Character, Long, List<Object>, String, Object> {
+    private SymbolTable symbolTable;
+
+    public DefaultMessageMapper(SymbolTable symbolTable) {
+        this.symbolTable = symbolTable;
+    }
+    
     @Override
     public String createString(String str) {
-        return "\"" + str + "\"";
+        return str;
     }
 
     @Override
@@ -23,8 +29,8 @@ public class DefaultMessageMapper implements MessageMapper<String, Character, St
     }
 
     @Override
-    public String createSymbol(String str) {
-        return str;
+    public Long createSymbol(String str) {
+        return symbolTable.getSymbolCodeFromString(str);
     }
 
     @Override
