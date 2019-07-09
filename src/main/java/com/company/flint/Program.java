@@ -5,6 +5,7 @@
  */
 package com.company.flint;
 
+import java.util.Hashtable;
 import java.util.List;
 
 /**
@@ -15,32 +16,23 @@ public class Program {
     public static void main(String[] args) {
         SymbolTable symbolTable = new SymbolTable();
         MessageParser parser = new MessageParser(new DefaultMessageMapper(symbolTable));
-        List<Object> message = parser.parse("myVar setTo \"str\"");
+        String src = "myVar setTo \"str\"";
+        List<Object> message = parser.parse(src);
         System.out.println(message);
         
+        Hashtable<Long, Object> locals = new Hashtable<>();
         MessageStream messageStream = new MessageStream(message);
         Evaluator evaluator = new Evaluator(symbolTable);
         Behavior[] behaviorArray = new Behavior[] {
-            new Behavior() {
-                @Override
-                public void evaluateNext(Evaluator evaluator, MessageStream messageStream) {
-                    evaluator.stop();
-                }
-            }
+            Behaviors.evalFromMessageStream,
+            Behaviors.stop
         };
-        Frame frame = new Frame(null, behaviorArray, null);
-        Behavior[] behaviorArrayInner = new Behavior[] {
-            new ContextBehavior(),
-            new Behavior() {
-                @Override
-                public void evaluateNext(Evaluator evaluator, MessageStream messageStream) {
-                    evaluator.respondWith();
-                }
-            }
-        };
-        Frame innerFrame = new Frame(messageStream, behaviorArrayInner, frame);
-        evaluator.evaluate(innerFrame);
+        Frame frame = new Frame(messageStream, behaviorArray, null, locals);
+        evaluator.evaluate(frame);
         
+        System.out.println(src);
+        System.out.println("=>");
         System.out.println(frame.pop());
+        System.out.println(symbolTable.toString(locals));
     }
 }

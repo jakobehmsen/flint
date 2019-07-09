@@ -8,6 +8,7 @@ package com.company.flint;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 /**
@@ -16,17 +17,18 @@ import java.util.Stack;
  */
 public class Frame {
     private MessageStream messageStream;
-    //private Behavior behavior;
     private List<Behavior> behaviorList;
     private int ip;
     private Frame sender;
+    private Map<Long, Object> locals;
     
     private Stack<Object> stack = new Stack<>();
 
-    public Frame(MessageStream messageStream, Behavior[] behaviorArray, Frame sender) {
+    public Frame(MessageStream messageStream, Behavior[] behaviorArray, Frame sender, Map<Long, Object> locals) {
         this.messageStream = messageStream;
         this.behaviorList = new ArrayList<>(Arrays.asList(behaviorArray));
         this.sender = sender;
+        this.locals = locals;
     }
     
     public void evaluateNext(Evaluator evaluator) {
@@ -45,8 +47,7 @@ public class Frame {
         Object r = pop();
         sender.push(r);
         evaluator.setFrame(sender);
-        
-        //continuationBehavior.evaluate(evaluator, messageStream, r);
+        sender.incIp();
     }
     
     public void push(Object obj) {
@@ -55,5 +56,22 @@ public class Frame {
     
     public Object pop() {
         return stack.pop();
+    }
+
+    public void store(long name) {
+        Object obj = pop();
+        locals.put(name, obj);
+    }
+
+    public void dup() {
+        push(stack.peek());
+    }
+
+    public Frame newForEval(Behavior[] behaviors) {
+        return new Frame(messageStream, behaviors, this, locals);
+    }
+
+    public void load(Long name) {
+        push(locals.get(name));
     }
 }

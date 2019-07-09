@@ -27,11 +27,11 @@ public class Evaluator {
             this.frame.evaluateNext(this);
         }
     }
-
-    /*public void evaluate(Behavior[] behaviorArray, MessageStream messageStream) {
-        Frame newFrame = new Frame(messageStream, behaviorArray, frame);
-        setFrame(newFrame);
-    }*/
+    
+    public void eval(Behavior[] behaviors) {
+        Frame evalFrame = getFrame().newForEval(behaviors);
+        setFrame(evalFrame);
+    }
     
     public void stop() {
         running = false;
