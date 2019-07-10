@@ -16,7 +16,7 @@ public class Program {
     public static void main(String[] args) {
         SymbolTable symbolTable = new SymbolTable();
         MessageParser parser = new MessageParser(new DefaultMessageMapper(symbolTable));
-        String src = "myVar setTo \"str\"";
+        String src = "myVar setTo \"str\".\nmySecondVar setTo \"str2\". \n\"result\"";
         List<Object> message = parser.parse(src);
         System.out.println(message);
         
@@ -24,7 +24,7 @@ public class Program {
         MessageStream messageStream = new MessageStream(message);
         Evaluator evaluator = new Evaluator(symbolTable);
         Behavior[] behaviorArray = new Behavior[] {
-            Behaviors.evalFromMessageStream,
+            Behaviors.evalParagraph,
             Behaviors.stop
         };
         Frame frame = new Frame(messageStream, behaviorArray, null, locals);

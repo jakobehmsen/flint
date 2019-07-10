@@ -28,8 +28,4 @@ public class MessageStream {
         index++;
         return obj;
     }
-    
-    /*public void evaluateNext(Evaluator evaluator, Behavior behavior) {
-        evaluator.evaluate(behavior, this);
-    }*/
 }

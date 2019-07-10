@@ -74,4 +74,8 @@ public class Frame {
     public void load(Long name) {
         push(locals.get(name));
     }
+
+    public void setIp(int index) {
+        ip = index;
+    }
 }

@@ -10,7 +10,22 @@ package com.company.flint;
  * @author jakob
  */
 public class Behaviors {
-    public static Behavior evalFromMessageStream = new Behavior() {
+    public static Behavior evalParagraph = new Behavior() {
+        @Override
+        public void evaluateNext(Evaluator evaluator, MessageStream messageStream) {
+            Long nameDot = evaluator.getSymbolTable().getSymbolCodeFromString(".");
+            
+            evaluator.eval(new Behavior[] {
+                Behaviors.evalSentence,
+                Behaviors.tryConsumeAndJumpIfNotEquals(nameDot, 4),
+                Behaviors.pop,
+                Behaviors.jump(0),
+                Behaviors.resp
+            });
+        }
+    };
+    
+    public static Behavior evalSentence = new Behavior() {
         @Override
         public void evaluateNext(Evaluator evaluator, MessageStream messageStream) {
             if(messageStream.peek() instanceof Long) {
@@ -21,10 +36,10 @@ public class Behaviors {
                     messageStream.consume();
 
                     // symbol:id '=' value:expression
-
+                    
                     // Always as expression
                     evaluator.eval(new Behavior[] {
-                        Behaviors.evalFromMessageStream,
+                        Behaviors.evalSentence,
                         Behaviors.dup,
                         Behaviors.store(name),
                         Behaviors.resp
@@ -73,6 +88,14 @@ public class Behaviors {
         }
     };
     
+    public static Behavior pop = new Behavior() {
+        @Override
+        public void evaluateNext(Evaluator evaluator, MessageStream messageStream) {
+            evaluator.getFrame().pop();
+            evaluator.getFrame().incIp();
+        }
+    };
+    
     public static Behavior store(long name) {
         return new Behavior() {
             @Override
@@ -89,6 +112,29 @@ public class Behaviors {
             public void evaluateNext(Evaluator evaluator, MessageStream messageStream) {
                 evaluator.getFrame().load(name);
                 evaluator.getFrame().incIp();
+            }
+        };
+    }
+
+    private static Behavior tryConsumeAndJumpIfNotEquals(Object obj, int index) {
+        return new Behavior() {
+            @Override
+            public void evaluateNext(Evaluator evaluator, MessageStream messageStream) {
+                if(obj.equals(messageStream.peek())) {
+                    messageStream.consume();
+                    evaluator.getFrame().incIp();
+                } else {
+                    evaluator.getFrame().setIp(index);
+                }
+            }
+        };
+    }
+
+    public static Behavior jump(int index) {
+        return new Behavior() {
+            @Override
+            public void evaluateNext(Evaluator evaluator, MessageStream messageStream) {
+                evaluator.getFrame().setIp(index);
             }
         };
     }
