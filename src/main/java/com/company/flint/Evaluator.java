@@ -52,4 +52,8 @@ public class Evaluator {
     public Frame getFrame() {
         return frame;
     }
+    
+    public boolean isFalse(Object obj) {
+        return Boolean.FALSE.equals(obj);
+    }
 }

@@ -16,7 +16,9 @@ public class Program {
     public static void main(String[] args) {
         SymbolTable symbolTable = new SymbolTable();
         MessageParser parser = new MessageParser(new DefaultMessageMapper(symbolTable));
-        String src = "myVar setTo \"str\".\nmySecondVar setTo \"str2\". \n\"result\"";
+        String src = "myVar setTo \"str\".\nmySecondVar setTo \"str2\". \n\"result\".\nfalse";
+        
+        System.out.println(src);
         List<Object> message = parser.parse(src);
         System.out.println(message);
         
@@ -30,9 +32,10 @@ public class Program {
         Frame frame = new Frame(messageStream, behaviorArray, null, locals);
         evaluator.evaluate(frame);
         
-        System.out.println(src);
+        Object response = frame.pop();
         System.out.println("=>");
-        System.out.println(frame.pop());
+        System.out.println(response);
+        System.out.println("isFalse=" + evaluator.isFalse(response));
         System.out.println(symbolTable.toString(locals));
     }
 }

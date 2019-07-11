@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @author jakob
  */
-public class DefaultMessageMapper implements MessageMapper<String, Character, Long, List<Object>, String, Object> {
+public class DefaultMessageMapper implements MessageMapper<String, Character, Object, List<Object>, String, Object> {
     private SymbolTable symbolTable;
 
     public DefaultMessageMapper(SymbolTable symbolTable) {
@@ -29,7 +29,11 @@ public class DefaultMessageMapper implements MessageMapper<String, Character, Lo
     }
 
     @Override
-    public Long createSymbol(String str) {
+    public Object createSymbol(String str) {
+        if(str.equals("false")) {
+            return false;
+        }
+        
         return symbolTable.getSymbolCodeFromString(str);
     }
 
