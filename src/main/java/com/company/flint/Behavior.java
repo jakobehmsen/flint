@@ -10,7 +10,5 @@ package com.company.flint;
  * @author jakob
  */
 public interface Behavior {
-
-    void evaluateNext(Evaluator evaluator, MessageStream messageStream);
-    
+    void evaluateNext(Evaluator evaluator);
 }

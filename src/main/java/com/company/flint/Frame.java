@@ -30,9 +30,13 @@ public class Frame {
         this.sender = sender;
         this.locals = locals;
     }
+
+    public MessageStream getMessageStream() {
+        return messageStream;
+    }
     
     public void evaluateNext(Evaluator evaluator) {
-        behaviorList.get(ip).evaluateNext(evaluator, messageStream);
+        behaviorList.get(ip).evaluateNext(evaluator);
     }
     
     public void injectBehavior(Behavior behavior) {
