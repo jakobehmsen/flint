@@ -16,7 +16,7 @@ public class Behaviors {
             Long nameDot = evaluator.getSymbolTable().getSymbolCodeFromString(".");
             
             evaluator.eval(new Behavior[] {
-                Behaviors.evalSentence,
+                Behaviors.evalSentence1,
                 Behaviors.tryConsumeAndJumpIfNotEquals(nameDot, 4),
                 Behaviors.pop,
                 Behaviors.jump(0),
@@ -25,7 +25,48 @@ public class Behaviors {
         }
     };
     
-    public static Behavior evalSentence = new Behavior() {
+    public static Behavior evalSentence1 = new Behavior() {
+        @Override
+        public void evaluateNext(Evaluator evaluator) {
+            Long nameImplies = evaluator.getSymbolTable().getSymbolCodeFromString("implies");
+            
+            evaluator.eval(new Behavior[] {
+                Behaviors.evalSentence2,
+                Behaviors.tryConsumeAndJumpIfNotEquals(nameImplies, 8),
+                Behaviors.jumpIfFalse(6),
+                Behaviors.evalSentence1, // Evaluate true block
+                Behaviors.consume, // Ignore false block
+                Behaviors.jump(8), // Jump to end
+                Behaviors.consume, // Ignore true block
+                Behaviors.evalSentence1, // Evaluate false block
+                Behaviors.resp
+            });
+        }
+    };
+    
+    public static Behavior jumpIfFalse(int index) {
+        return new Behavior() {
+            @Override
+            public void evaluateNext(Evaluator evaluator) {
+                Object obj = evaluator.getFrame().pop();
+                if(evaluator.isFalse(obj)) {
+                    evaluator.getFrame().setIp(index);
+                } else {
+                    evaluator.getFrame().incIp();
+                }
+            }
+        };
+    }
+    
+    public static Behavior consume = new Behavior() {
+        @Override
+        public void evaluateNext(Evaluator evaluator) {
+            evaluator.getFrame().getMessageStream().consume();
+            evaluator.getFrame().incIp();
+        }
+    };
+    
+    public static Behavior evalSentence2 = new Behavior() {
         @Override
         public void evaluateNext(Evaluator evaluator) {
             if(evaluator.getFrame().getMessageStream().peek() instanceof Long) {
@@ -39,7 +80,7 @@ public class Behaviors {
                     
                     // Always as expression
                     evaluator.eval(new Behavior[] {
-                        Behaviors.evalSentence,
+                        Behaviors.evalSentence2,
                         Behaviors.dup,
                         Behaviors.store(name),
                         Behaviors.resp
@@ -64,7 +105,8 @@ public class Behaviors {
                 
                 // Should be evaluated
                 //evaluator.getFrame().push(evaluator.getFrame().getMessageStream().peek());
-                evaluator.getFrame().push(evaluator.getFrame().getMessageStream().consume());
+                Object obj = evaluator.getFrame().getMessageStream().consume();
+                evaluator.getFrame().push(obj);
 
                 evaluator.getFrame().incIp();
             }

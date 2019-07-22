@@ -16,7 +16,10 @@ public class Program {
     public static void main(String[] args) {
         SymbolTable symbolTable = new SymbolTable();
         MessageParser parser = new MessageParser(new DefaultMessageMapper(symbolTable));
-        String src = "myVar setTo \"str\".\nmySecondVar setTo \"str2\". \n\"result\".\nfalse";
+        //String src = "myVar setTo \"str\".\nmySecondVar setTo \"str2\". \n\"result\".\nfalse";
+        //String src = "\"something\" implies \"1\" \"0\"";
+        String src = "false implies \"1\" \"0\"";
+        //String src = "\"1\"";
         
         System.out.println(src);
         List<Object> message = parser.parse(src);
