@@ -20,10 +20,40 @@ public class Program {
         //String src = "\"something\" implies \"1\" \"0\"";
         //String src = "false implies \"1\" \"0\"";
         //String src = "myVar means false implies \"1\" \"0\". myVar";
-        String src = "myVar means \"something\" implies \"1\" \"0\".\nmyVar";
+        //String src = "myVar means \"something\" implies \"1\" \"0\".\nmyVar";
         //String src = "\"1\"";
         
-        System.out.println(src);
+        Hashtable<Long, Object> locals = new Hashtable<>();
+        
+        MessageSourceStream messageSourceStream = new MessageSourceStream(System.in);
+        
+        while(true) {
+            String src = messageSourceStream.nextMessageSource();
+            
+            if(src.equals("quit")) {
+                break;
+            }
+            
+            List<Object> message = parser.parse(src);
+            //System.out.println(message);
+
+            MessageStream messageStream = new MessageStream(message);
+            Evaluator evaluator = new Evaluator(symbolTable);
+            Behavior[] behaviorArray = new Behavior[] {
+                Behaviors.evalParagraph,
+                Behaviors.stop
+            };
+            Frame frame = new Frame(messageStream, behaviorArray, null, locals);
+            evaluator.evaluate(frame);
+
+            Object response = frame.pop();
+            System.out.println("=>");
+            System.out.println(response);
+            //System.out.println("isFalse=" + evaluator.isFalse(response));
+            //System.out.println(symbolTable.toString(locals));
+        }
+        
+        /*System.out.println(src);
         List<Object> message = parser.parse(src);
         System.out.println(message);
         
@@ -41,6 +71,6 @@ public class Program {
         System.out.println("=>");
         System.out.println(response);
         System.out.println("isFalse=" + evaluator.isFalse(response));
-        System.out.println(symbolTable.toString(locals));
+        System.out.println(symbolTable.toString(locals));*/
     }
 }
