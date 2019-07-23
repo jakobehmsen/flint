@@ -22,6 +22,14 @@ public class MessageStream {
     public Object peek() {
         return index < objects.size() ? objects.get(index) : null;
     }
+    
+    public boolean peekEquals(Object obj) {
+        Object peek = peek();
+        if(peek != null) {
+            return peek.equals(obj);
+        }
+        return false;
+    }
 
     public Object consume() {
         Object obj = peek();
