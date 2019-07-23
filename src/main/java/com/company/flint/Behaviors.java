@@ -28,29 +28,22 @@ public class Behaviors {
     public static Behavior evalSentenceBind = new Behavior() {
         @Override
         public void evaluateNext(Evaluator evaluator) {
-            if(evaluator.getFrame().getMessageStream().peek() instanceof Long) {
+            Long setToSymbolCode = evaluator.getSymbolTable().getSymbolCodeFromString("means");
+                
+            if(evaluator.getFrame().getMessageStream().peek(0) instanceof Long &&
+                evaluator.getFrame().getMessageStream().peekEquals(1, setToSymbolCode)) {
                 Long name = (Long) evaluator.getFrame().getMessageStream().consume();
-                Long setToSymbolCode = evaluator.getSymbolTable().getSymbolCodeFromString("means");
+                evaluator.getFrame().getMessageStream().consume();
 
-                if(evaluator.getFrame().getMessageStream().peekEquals(setToSymbolCode)) {
-                    evaluator.getFrame().getMessageStream().consume();
+                // symbol:id '=' value:expression
 
-                    // symbol:id '=' value:expression
-                    
-                    // Always as expression
-                    evaluator.eval(new Behavior[] {
-                        Behaviors.evalSentenceBind,
-                        Behaviors.dup,
-                        Behaviors.store(name),
-                        Behaviors.resp
-                    });
-                } else {
-                    // Always as expression
-                    evaluator.eval(new Behavior[] {
-                        Behaviors.load(name),
-                        Behaviors.resp
-                    });
-                }
+                // Always as expression
+                evaluator.eval(new Behavior[] {
+                    Behaviors.evalSentenceBind,
+                    Behaviors.dup,
+                    Behaviors.store(name),
+                    Behaviors.resp
+                });
             } else {
                 evaluator.eval(new Behavior[] {
                     Behaviors.evalSentenceImplies,
@@ -82,22 +75,30 @@ public class Behaviors {
     public static Behavior evalSentenceOpen = new Behavior() {
         @Override
         public void evaluateNext(Evaluator evaluator) {
-            // Should look up the behavior of the object, and pass along
-            // the message stream for the object
-            // Once the object finishes its consumption of the message 
-            // stream, then optionals message chaining is performed.
-            // Some special messages are performed after the message stream
-            // is forwarded.
-            // E.g. the '=>' ::? message is processed.
+            if(evaluator.getFrame().getMessageStream().peek(0) instanceof Long) {
+                Long name = (Long) evaluator.getFrame().getMessageStream().consume();
+                evaluator.eval(new Behavior[] {
+                    Behaviors.load(name),
+                    Behaviors.resp
+                });
+            } else {
+                // Should look up the behavior of the object, and pass along
+                // the message stream for the object
+                // Once the object finishes its consumption of the message 
+                // stream, then optionals message chaining is performed.
+                // Some special messages are performed after the message stream
+                // is forwarded.
+                // E.g. the '=>' ::? message is processed.
 
-            // For now, simply respond with the object
+                // For now, simply respond with the object
 
-            // Should be evaluated
-            //evaluator.getFrame().push(evaluator.getFrame().getMessageStream().peek());
-            Object obj = evaluator.getFrame().getMessageStream().consume();
-            evaluator.getFrame().push(obj);
+                // Should be evaluated
+                //evaluator.getFrame().push(evaluator.getFrame().getMessageStream().peek());
+                Object obj = evaluator.getFrame().getMessageStream().consume();
+                evaluator.getFrame().push(obj);
 
-            evaluator.getFrame().incIp();
+                evaluator.getFrame().incIp();
+            }
         }
     };
     

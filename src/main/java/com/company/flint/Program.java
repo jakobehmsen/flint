@@ -30,7 +30,7 @@ public class Program {
         while(true) {
             String src = messageSourceStream.nextMessageSource();
             
-            if(src.equals("quit")) {
+            if(src.trim().equals("quit")) {
                 break;
             }
             

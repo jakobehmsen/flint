@@ -20,11 +20,15 @@ public class MessageStream {
     }
 
     public Object peek() {
-        return index < objects.size() ? objects.get(index) : null;
+        return peek(0);
+    }
+
+    public Object peek(int offset) {
+        return (index + offset) < objects.size() ? objects.get(index + offset) : null;
     }
     
-    public boolean peekEquals(Object obj) {
-        Object peek = peek();
+    public boolean peekEquals(int offset, Object obj) {
+        Object peek = peek(offset);
         if(peek != null) {
             return peek.equals(obj);
         }
@@ -32,7 +36,7 @@ public class MessageStream {
     }
 
     public Object consume() {
-        Object obj = peek();
+        Object obj = peek(0);
         index++;
         return obj;
     }
