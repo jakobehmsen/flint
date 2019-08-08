@@ -5,7 +5,6 @@
  */
 package com.company.flint;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import org.codehaus.jparsec.Parser;
