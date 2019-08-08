@@ -28,7 +28,7 @@ public class Behaviors {
     public static Behavior evalSentenceBind = new Behavior() {
         @Override
         public void evaluateNext(Evaluator evaluator) {
-            Long setToSymbolCode = evaluator.getSymbolTable().getSymbolCodeFromString("means");
+            Long setToSymbolCode = evaluator.getSymbolTable().getSymbolCodeFromString("<-");
                 
             if(evaluator.getFrame().getMessageStream().peek(0) instanceof Long &&
                 evaluator.getFrame().getMessageStream().peekEquals(1, setToSymbolCode)) {
@@ -56,7 +56,7 @@ public class Behaviors {
     public static Behavior evalSentenceImplies = new Behavior() {
         @Override
         public void evaluateNext(Evaluator evaluator) {
-            Long nameImplies = evaluator.getSymbolTable().getSymbolCodeFromString("implies");
+            Long nameImplies = evaluator.getSymbolTable().getSymbolCodeFromString("=>");
             
             evaluator.eval(new Behavior[] {
                 Behaviors.evalSentenceOpen,
