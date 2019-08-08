@@ -11,8 +11,9 @@ import java.util.List;
  *
  * @author jakob
  */
-public interface MessageMapper<S extends O, C extends O, B extends O, L extends O, E extends O, O> {
+public interface MessageMapper<S extends O, C extends O, B extends O, L extends O, E extends O, N extends O, O> {
     S createString(String str);
+    N createNumber(String str);
     C createChar(char ch);
     B createSymbol(String str);
     L createList(List<O> objects);

@@ -5,13 +5,14 @@
  */
 package com.company.flint;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
  *
  * @author jakob
  */
-public class DefaultMessageMapper implements MessageMapper<String, Character, Object, List<Object>, String, Object> {
+public class DefaultMessageMapper implements MessageMapper<String, Character, Object, List<Object>, String, Number, Object> {
     private SymbolTable symbolTable;
 
     public DefaultMessageMapper(SymbolTable symbolTable) {
@@ -46,4 +47,9 @@ public class DefaultMessageMapper implements MessageMapper<String, Character, Ob
     public String createError(String msg) {
         return msg;
     } 
+
+    @Override
+    public Number createNumber(String str) {
+        return new BigDecimal(str);
+    }
 }
