@@ -5,6 +5,8 @@
  */
 package com.company.flint;
 
+import java.math.BigDecimal;
+
 /**
  *
  * @author jakob
@@ -28,30 +30,64 @@ public class Behaviors {
     public static Behavior evalSentenceBind = new Behavior() {
         @Override
         public void evaluateNext(Evaluator evaluator) {
-            Long setToSymbolCode = evaluator.getSymbolTable().getSymbolCodeFromString("<-");
-                
-            if(evaluator.getFrame().getMessageStream().peek(0) instanceof Long &&
-                evaluator.getFrame().getMessageStream().peekEquals(1, setToSymbolCode)) {
-                Long name = (Long) evaluator.getFrame().getMessageStream().consume();
-                evaluator.getFrame().getMessageStream().consume();
-
-                // symbol:id '=' value:expression
-
-                // Always as expression
-                evaluator.eval(new Behavior[] {
-                    Behaviors.evalSentenceBind,
-                    Behaviors.dup,
-                    Behaviors.store(name),
-                    Behaviors.resp
-                });
-            } else {
-                evaluator.eval(new Behavior[] {
-                    Behaviors.evalSentenceImplies,
-                    Behaviors.resp
-                });
-            }
+            Object rootObject = evaluator.getFrame().getMessageStream().consume();
+            Behavior objectBehavior = evaluator.getFrame().resolveObjectBehavior(rootObject);
+            objectBehavior.evaluateNext(evaluator);
         }
     };
+    
+    public static Behavior loadMessageStream = new Behavior() {
+        @Override
+        public void evaluateNext(Evaluator evaluator) {
+            Object obj = evaluator.getFrame().getMessageStream().consume();
+            
+        }
+    };
+    
+    public static Behavior evalSentenceSymbol(Long name) {
+        return new Behavior() {
+            @Override
+            public void evaluateNext(Evaluator evaluator) {
+                Long setToSymbolCode = evaluator.getSymbolTable().getSymbolCodeFromString("<-");
+                
+                if(evaluator.getFrame().getMessageStream().peekEquals(0, setToSymbolCode)) {
+                    evaluator.getFrame().getMessageStream().consume();
+
+                    // symbol:id '=' value:expression
+
+                    // Always as expression
+                    evaluator.eval(new Behavior[] {
+                        Behaviors.evalSentenceBind,
+                        Behaviors.dup,
+                        Behaviors.store(name),
+                        Behaviors.resp
+                    });
+                }
+                /*Long setToSymbolCode = evaluator.getSymbolTable().getSymbolCodeFromString("<-");
+
+                if(evaluator.getFrame().getMessageStream().peek(0) instanceof Long &&
+                    evaluator.getFrame().getMessageStream().peekEquals(1, setToSymbolCode)) {
+                    Long name = (Long) evaluator.getFrame().getMessageStream().consume();
+                    evaluator.getFrame().getMessageStream().consume();
+
+                    // symbol:id '=' value:expression
+
+                    // Always as expression
+                    evaluator.eval(new Behavior[] {
+                        Behaviors.evalSentenceBind,
+                        Behaviors.dup,
+                        Behaviors.store(name),
+                        Behaviors.resp
+                    });
+                } else {
+                    evaluator.eval(new Behavior[] {
+                        Behaviors.evalSentenceImplies,
+                        Behaviors.resp
+                    });
+                }*/
+            }
+        };
+    }
     
     public static Behavior evalSentenceImplies = new Behavior() {
         @Override
@@ -99,6 +135,14 @@ public class Behaviors {
 
                 evaluator.getFrame().incIp();
             }
+        }
+    };
+    
+    public static Behavior passTo = new Behavior() {
+        @Override
+        public void evaluateNext(Evaluator evaluator) {
+            Behavior[] behaviors = (Behavior[]) evaluator.getFrame().pop();
+            evaluator.eval(behaviors);
         }
     };
     
@@ -174,7 +218,7 @@ public class Behaviors {
         };
     }
 
-    private static Behavior tryConsumeAndJumpIfNotEquals(Object obj, int index) {
+    public static Behavior tryConsumeAndJumpIfNotEquals(Object obj, int index) {
         return new Behavior() {
             @Override
             public void evaluateNext(Evaluator evaluator) {
@@ -193,6 +237,16 @@ public class Behaviors {
             @Override
             public void evaluateNext(Evaluator evaluator) {
                 evaluator.getFrame().setIp(index);
+            }
+        };
+    }
+
+    public static Behavior push(BigDecimal bigDecimal) {
+        return new Behavior() {
+            @Override
+            public void evaluateNext(Evaluator evaluator) {
+                evaluator.getFrame().push(bigDecimal);
+                evaluator.getFrame().incIp();
             }
         };
     }

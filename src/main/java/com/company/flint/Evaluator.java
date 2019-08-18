@@ -28,6 +28,16 @@ public class Evaluator {
         }
     }
     
+    public void evaluate2(Frame frame) {
+        this.frame = frame;
+        
+        running = true;
+        
+        while(running) {
+            this.frame.evaluateNext2(this);
+        }
+    }
+    
     public void eval(Behavior[] behaviors) {
         Frame evalFrame = getFrame().newForEval(behaviors);
         setFrame(evalFrame);

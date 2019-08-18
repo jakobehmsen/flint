@@ -5,6 +5,7 @@
  */
 package com.company.flint;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,6 +22,7 @@ public class Frame {
     private int ip;
     private Frame sender;
     private Map<Long, Object> locals;
+    private State state;
     
     private Stack<Object> stack = new Stack<>();
 
@@ -31,12 +33,24 @@ public class Frame {
         this.locals = locals;
     }
 
+    public Frame(MessageStream messageStream, State state, Frame sender, Map<Long, Object> locals) {
+        this.messageStream = messageStream;
+        this.state = state;
+        this.sender = sender;
+        this.locals = locals;
+    }
+
     public MessageStream getMessageStream() {
         return messageStream;
     }
     
     public void evaluateNext(Evaluator evaluator) {
         behaviorList.get(ip).evaluateNext(evaluator);
+    }
+    
+    public void evaluateNext2(Evaluator evaluator) {
+        System.out.println(state);
+        state = state.nextState(evaluator);
     }
     
     public void injectBehavior(Behavior behavior) {
@@ -75,11 +89,33 @@ public class Frame {
         return new Frame(messageStream, behaviors, this, locals);
     }
 
+    public Frame newForEval(State state) {
+        return new Frame(messageStream, state, this, locals);
+    }
+
     public void load(Long name) {
         push(locals.get(name));
     }
 
     public void setIp(int index) {
         ip = index;
+    }
+
+    public Behavior resolveObjectBehavior(Object rootObject) {
+        if(rootObject instanceof Long) {
+            return Behaviors.evalSentenceSymbol((Long)rootObject);
+        } else if(rootObject instanceof BigDecimal) {
+            return Behaviors.push((BigDecimal)rootObject);
+        } else {
+            return new Behavior() {
+                @Override
+                public void evaluateNext(Evaluator evaluator) {
+                    evaluator.eval(new Behavior[] {
+                        Behaviors.evalSentenceImplies,
+                        Behaviors.resp
+                    });
+                }
+            };
+        }
     }
 }

@@ -5,6 +5,7 @@
  */
 package com.company.flint;
 
+import java.math.BigDecimal;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -25,14 +26,29 @@ public class Program {
         
         Hashtable<Long, Object> locals = new Hashtable<>();
         
+        /*locals.put(symbolTable.getSymbolCodeFromString("exprs"), new Behavior[]{
+            Behaviors.load(symbolTable.getSymbolCodeFromString("expr")),
+            Behaviors.tryConsumeAndJumpIfNotEquals(symbolTable.getSymbolCodeFromString("."), 4),
+            Behaviors.pop,
+            Behaviors.jump(0),
+            Behaviors.resp
+        });
+        
+        locals.put(symbolTable.getSymbolCodeFromString("expr"), new Behavior[]{
+            Behaviors.loadMessageStream,
+            Behaviors.resp
+        });*/
+        
         MessageSourceStream messageSourceStream = new MessageSourceStream(System.in);
         
-        while(true) {
-            String src = messageSourceStream.nextMessageSource();
+        //while(true) {
+            /*String src = messageSourceStream.nextMessageSource();
             
             if(src.trim().equals("quit")) {
                 break;
-            }
+            }*/
+        
+            String src = "x <- 6";
             
             List<Object> message = parser.parse(src);
             //System.out.println(message);
@@ -40,18 +56,26 @@ public class Program {
             MessageStream messageStream = new MessageStream(message);
             Evaluator evaluator = new Evaluator(symbolTable);
             Behavior[] behaviorArray = new Behavior[] {
-                Behaviors.evalParagraph,
+                Behaviors.load(symbolTable.getSymbolCodeFromString("exprs")),
+                Behaviors.passTo,
                 Behaviors.stop
             };
-            Frame frame = new Frame(messageStream, behaviorArray, null, locals);
-            evaluator.evaluate(frame);
+            /*Behavior[] behaviorArray = new Behavior[] {
+                Behaviors.evalParagraph,
+                Behaviors.stop
+            };*/
+            State state = States.invoke(
+                States.push(States.expr()), 
+                States.always(States.finish));
+            Frame frame = new Frame(messageStream, state, null, locals);
+            evaluator.evaluate2(frame);
 
             Object response = frame.pop();
             System.out.println("=>");
             System.out.println(response);
             //System.out.println("isFalse=" + evaluator.isFalse(response));
             //System.out.println(symbolTable.toString(locals));
-        }
+        //}
         
         /*System.out.println(src);
         List<Object> message = parser.parse(src);
