@@ -135,13 +135,27 @@ public class States {
                     }
                 }
                 
+                return States.invoke(expr1(), continuation);
+            }
+
+            @Override
+            public String toString() {
+                return "expr";
+            }
+        };
+    }
+    
+    public static State.Callable expr1() {
+        return new State.Callable() {
+            @Override
+            public State invoke(Evaluator evaluator, State.Continuation continuation) {
                 Object obj = evaluator.getFrame().getMessageStream().consume();
                 return continueWith(obj, continuation);
             }
 
             @Override
             public String toString() {
-                return "expr";
+                return "expr1";
             }
         };
     }

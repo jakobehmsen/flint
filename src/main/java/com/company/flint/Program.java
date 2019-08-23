@@ -48,12 +48,17 @@ public class Program {
                 break;
             }*/
         
-            String src = "x <- 6";
+            String src = "x <- to (looksAt whatever => \"yes\" \"no\"). x whateverer";
             
             List<Object> message = parser.parse(src);
             //System.out.println(message);
 
             MessageStream messageStream = new MessageStream(message);
+            
+            MessageStream incomingMessageStream = new MessageStream(parser.parse(""));
+            
+            Object result = messageStream.exprs(locals, symbolTable, incomingMessageStream);
+            
             Evaluator evaluator = new Evaluator(symbolTable);
             Behavior[] behaviorArray = new Behavior[] {
                 Behaviors.load(symbolTable.getSymbolCodeFromString("exprs")),
