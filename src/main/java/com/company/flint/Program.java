@@ -6,6 +6,8 @@
 package com.company.flint;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -48,7 +50,7 @@ public class Program {
                 break;
             }*/
         
-            String src = "x <- to (looksAt whatever => \"yes\" \"no\"). x whateverer";
+            String src = "x <- to (looksAt whatever => \"yes\"). x whateverer";
             
             List<Object> message = parser.parse(src);
             //System.out.println(message);
@@ -58,6 +60,10 @@ public class Program {
             MessageStream incomingMessageStream = new MessageStream(parser.parse(""));
             
             Object result = messageStream.exprs(locals, symbolTable, incomingMessageStream);
+            System.out.println(result);
+            
+            if(1 != 2)
+                return;
             
             Evaluator evaluator = new Evaluator(symbolTable);
             Behavior[] behaviorArray = new Behavior[] {

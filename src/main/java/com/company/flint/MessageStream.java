@@ -37,9 +37,13 @@ public class MessageStream {
     }
 
     public Object consume() {
-        Object obj = peek(0);
-        index++;
-        return obj;
+        if(hasMore()) {
+            Object obj = peek(0);
+            index++;
+            return obj;
+        } else {
+            return null;
+        }
     }
 
     public boolean hasMore() {
@@ -119,7 +123,7 @@ public class MessageStream {
             Long name = (Long) consume();
             return locals.get(name);
         } else {
-            return consume();
+            return hasMore() ? consume() : null;
         }
     }
 
